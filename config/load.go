@@ -33,14 +33,9 @@ func (c *Config) Outdated() error {
 	return nil
 }
 
-func (c *Config) Upgrade(pkgs ...string) error {
-	pkgsLuaString := make([]lua.LValue, len(pkgs))
-	for i := range pkgs {
-		pkgsLuaString[i] = lua.LString(pkgs[i])
-	}
-
+func (c *Config) Upgrade(pkgName string) error {
 	co, _ := c.luaState.NewThread()
-	_, err, _ := c.luaState.Resume(co, &c.raw.Upgrade, pkgsLuaString...)
+	_, err, _ := c.luaState.Resume(co, &c.raw.Upgrade, lua.LString(pkgName))
 	if err != nil {
 		return fmt.Errorf("failed to execute function upgrade: %w", err)
 	}
