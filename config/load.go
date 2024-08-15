@@ -11,6 +11,7 @@ import (
 
 type rawConfig struct {
 	Outdated lua.LFunction
+	Upgrade  lua.LFunction
 }
 
 type Config struct {
@@ -27,6 +28,21 @@ func (c *Config) Outdated() error {
 	_, err, _ := c.luaState.Resume(co, &c.raw.Outdated)
 	if err != nil {
 		return fmt.Errorf("failed to execute function outdated: %w", err)
+	}
+
+	return nil
+}
+
+func (c *Config) Upgrade(pkgs ...string) error {
+	pkgsLuaString := make([]lua.LValue, len(pkgs))
+	for i := range pkgs {
+		pkgsLuaString[i] = lua.LString(pkgs[i])
+	}
+
+	co, _ := c.luaState.NewThread()
+	_, err, _ := c.luaState.Resume(co, &c.raw.Upgrade, pkgsLuaString...)
+	if err != nil {
+		return fmt.Errorf("failed to execute function upgrade: %w", err)
 	}
 
 	return nil
