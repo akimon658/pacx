@@ -26,7 +26,7 @@ var upgradeCmd = &cobra.Command{
 			splited := strings.Split(args[i], ":")
 
 			splitedArgs[i].manager = splited[0]
-			splitedArgs[i].name = strings.TrimPrefix(args[i], splited[0]+":")
+			splitedArgs[i].name = strings.Join(splited[1:], "")
 		}
 
 		return upgrade(splitedArgs)
@@ -41,7 +41,7 @@ func upgrade(pkgs []pkgInfo) error {
 		}
 		defer cfg.Close()
 
-		return cfg.Upgrade()
+		return cfg.Upgrade(pkgs[i].name)
 	}
 	return nil
 }
