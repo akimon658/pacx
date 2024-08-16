@@ -51,13 +51,10 @@ func Load(pkgManager string) (*Config, error) {
 		return nil, fmt.Errorf("failed to open config file: %w", err)
 	}
 
-	var rawCfg rawConfig
 	ret := cfg.luaState.Get(-1)
-	if err := gluamapper.Map(ret.(*lua.LTable), &rawCfg); err != nil {
+	if err := gluamapper.Map(ret.(*lua.LTable), &cfg.raw); err != nil {
 		return nil, fmt.Errorf("failed to load configuration: %w", err)
 	}
-
-	cfg.raw = rawCfg
 
 	return &cfg, nil
 }
