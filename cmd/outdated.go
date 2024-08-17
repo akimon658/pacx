@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"errors"
+	"slices"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -14,11 +16,17 @@ var outdatedCmd = &cobra.Command{
 		if len(args) == 0 {
 			return errors.New("no package manager specified")
 		}
+
+		slices.Sort(args)
+		args = slices.Compact(args)
+
 		return outdated(args)
 	},
 }
 
 func outdated(pkgManagers []string) error {
+	var funcUndefinedManagers []string
+
 	for i := range pkgManagers {
 		cfg, err := config.Load(pkgManagers[i])
 		if err != nil {
@@ -26,7 +34,17 @@ func outdated(pkgManagers []string) error {
 		}
 		defer cfg.Close()
 
-		return cfg.Outdated()
+		if err := cfg.Outdated(); err != nil {
+			if errors.Is(err, config.ErrFunctionNotDefined) {
+				funcUndefinedManagers = append(funcUndefinedManagers, pkgManagers[i])
+			} else {
+				return err
+			}
+		}
+	}
+
+	if len(funcUndefinedManagers) > 0 {
+		errors.New("function outdated is not defined for " + strings.Join(funcUndefinedManagers, ", "))
 	}
 
 	return nil
