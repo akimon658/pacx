@@ -25,9 +25,11 @@ func (c *Config) Close() {
 	c.luaState.Close()
 }
 
+var ErrFunctionNotDefined = errors.New("function not defined")
+
 func (c *Config) Install(pkgName string) error {
 	if c.raw.Install.Proto == nil {
-		return errors.New("function install not defined")
+		return ErrFunctionNotDefined
 	}
 
 	co, _ := c.luaState.NewThread()
@@ -41,7 +43,7 @@ func (c *Config) Install(pkgName string) error {
 
 func (c *Config) Outdated() error {
 	if c.raw.Outdated.Proto == nil {
-		return errors.New("function outdated not defined")
+		return ErrFunctionNotDefined
 	}
 
 	co, _ := c.luaState.NewThread()
@@ -55,7 +57,7 @@ func (c *Config) Outdated() error {
 
 func (c *Config) Upgrade(pkgName string) error {
 	if c.raw.Upgrade.Proto == nil {
-		return errors.New("function upgrade not defined")
+		return ErrFunctionNotDefined
 	}
 
 	co, _ := c.luaState.NewThread()

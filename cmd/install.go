@@ -2,7 +2,8 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
+	"slices"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -21,7 +22,7 @@ var installCmd = &cobra.Command{
 }
 
 func install(pkgs []pkgInfo) error {
-	var errs error
+	var funcUndefinedManagers []string
 
 	for i := range pkgs {
 		cfg, err := config.Load(pkgs[i].manager)
@@ -31,9 +32,20 @@ func install(pkgs []pkgInfo) error {
 		defer cfg.Close()
 
 		if err := cfg.Install(pkgs[i].name); err != nil {
-			errs = fmt.Errorf("\n%w", err)
+			if errors.Is(err, config.ErrFunctionNotDefined) {
+				funcUndefinedManagers = append(funcUndefinedManagers, pkgs[i].manager)
+			} else {
+				return err
+			}
 		}
 	}
 
-	return errs
+	if len(funcUndefinedManagers) > 0 {
+		slices.Sort(funcUndefinedManagers)
+		funcUndefinedManagers = slices.Compact(funcUndefinedManagers)
+
+		return errors.New("function install is not defined for " + strings.Join(funcUndefinedManagers, ", "))
+	}
+
+	return nil
 }
