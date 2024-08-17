@@ -9,18 +9,18 @@ import (
 	"github.com/akimon658/pacx/config"
 )
 
-var upgradeCmd = &cobra.Command{
-	Use: "upgrade",
+var installCmd = &cobra.Command{
+	Use: "install",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
-			return errors.New("no package manager specified")
+			return errors.New("no package specified")
 		}
 
-		return upgrade(argsToPkgInfo(args))
+		return install(argsToPkgInfo(args))
 	},
 }
 
-func upgrade(pkgs []pkgInfo) error {
+func install(pkgs []pkgInfo) error {
 	var errs error
 
 	for i := range pkgs {
@@ -30,7 +30,7 @@ func upgrade(pkgs []pkgInfo) error {
 		}
 		defer cfg.Close()
 
-		if err := cfg.Upgrade(pkgs[i].name); err != nil {
+		if err := cfg.Install(pkgs[i].name); err != nil {
 			errs = fmt.Errorf("\n%w", err)
 		}
 	}

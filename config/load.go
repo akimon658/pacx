@@ -11,6 +11,7 @@ import (
 )
 
 type rawConfig struct {
+	Install  lua.LFunction
 	Outdated lua.LFunction
 	Upgrade  lua.LFunction
 }
@@ -22,6 +23,20 @@ type Config struct {
 
 func (c *Config) Close() {
 	c.luaState.Close()
+}
+
+func (c *Config) Install(pkgName string) error {
+	if c.raw.Install.Proto == nil {
+		return errors.New("function install not defined")
+	}
+
+	co, _ := c.luaState.NewThread()
+	_, err, _ := c.luaState.Resume(co, &c.raw.Install, lua.LString(pkgName))
+	if err != nil {
+		return fmt.Errorf("failed to execute function install: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Config) Outdated() error {
