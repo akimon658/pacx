@@ -28,45 +28,35 @@ func (c *Config) Close() {
 var ErrFunctionNotDefined = errors.New("function not defined")
 
 func (c *Config) Install(pkgName string) error {
-	if c.raw.Install.Proto == nil {
-		return ErrFunctionNotDefined
-	}
-
-	co, _ := c.luaState.NewThread()
-	_, err, _ := c.luaState.Resume(co, &c.raw.Install, lua.LString(pkgName))
-	if err != nil {
+	if err := c.callLuaFunc(&c.raw.Install, lua.LString(pkgName)); err != nil {
 		return fmt.Errorf("failed to execute function install: %w", err)
 	}
-
 	return nil
 }
 
 func (c *Config) Outdated() error {
-	if c.raw.Outdated.Proto == nil {
-		return ErrFunctionNotDefined
-	}
-
-	co, _ := c.luaState.NewThread()
-	_, err, _ := c.luaState.Resume(co, &c.raw.Outdated)
-	if err != nil {
+	if err := c.callLuaFunc(&c.raw.Outdated); err != nil {
 		return fmt.Errorf("failed to execute function outdated: %w", err)
 	}
-
 	return nil
 }
 
 func (c *Config) Upgrade(pkgName string) error {
-	if c.raw.Upgrade.Proto == nil {
+	if err := c.callLuaFunc(&c.raw.Upgrade, lua.LString(pkgName)); err != nil {
+		return fmt.Errorf("failed to execute function upgrade: %w", err)
+	}
+	return nil
+}
+
+func (c *Config) callLuaFunc(fn *lua.LFunction, args ...lua.LValue) error {
+	if fn.Proto == nil {
 		return ErrFunctionNotDefined
 	}
 
 	co, _ := c.luaState.NewThread()
-	_, err, _ := c.luaState.Resume(co, &c.raw.Upgrade, lua.LString(pkgName))
-	if err != nil {
-		return fmt.Errorf("failed to execute function upgrade: %w", err)
-	}
+	_, err, _ := c.luaState.Resume(co, fn, args...)
 
-	return nil
+	return err
 }
 
 func Load(pkgManager string) (*Config, error) {

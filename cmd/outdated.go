@@ -44,7 +44,7 @@ func outdated(pkgManagers []string) error {
 	}
 
 	if len(funcUndefinedManagers) > 0 {
-		errors.New("function outdated is not defined for " + strings.Join(funcUndefinedManagers, ", "))
+		return errors.New("function outdated is not defined for " + strings.Join(funcUndefinedManagers, ", "))
 	}
 
 	return nil
