@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 
@@ -24,6 +25,10 @@ func (c *Config) Close() {
 }
 
 func (c *Config) Outdated() error {
+	if c.raw.Outdated.Proto == nil {
+		return errors.New("function outdated not defined")
+	}
+
 	co, _ := c.luaState.NewThread()
 	_, err, _ := c.luaState.Resume(co, &c.raw.Outdated)
 	if err != nil {
@@ -34,6 +39,10 @@ func (c *Config) Outdated() error {
 }
 
 func (c *Config) Upgrade(pkgName string) error {
+	if c.raw.Upgrade.Proto == nil {
+		return errors.New("function upgrade not defined")
+	}
+
 	co, _ := c.luaState.NewThread()
 	_, err, _ := c.luaState.Resume(co, &c.raw.Upgrade, lua.LString(pkgName))
 	if err != nil {
