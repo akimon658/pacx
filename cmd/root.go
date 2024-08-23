@@ -15,6 +15,7 @@ func Execute() error {
 }
 
 func init() {
+	rootCmd.AddCommand(infoCmd)
 	rootCmd.AddCommand(installCmd)
 	rootCmd.AddCommand(outdatedCmd)
 	rootCmd.AddCommand(upgradeCmd)
