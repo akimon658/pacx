@@ -19,6 +19,7 @@ func init() {
 	rootCmd.AddCommand(installCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(outdatedCmd)
+	rootCmd.AddCommand(uninstallCmd)
 	rootCmd.AddCommand(upgradeCmd)
 }
 
