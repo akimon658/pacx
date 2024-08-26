@@ -11,11 +11,12 @@ import (
 )
 
 type rawConfig struct {
-	Info     lua.LFunction
-	Install  lua.LFunction
-	List     lua.LFunction
-	Outdated lua.LFunction
-	Upgrade  lua.LFunction
+	Info      lua.LFunction
+	Install   lua.LFunction
+	List      lua.LFunction
+	Outdated  lua.LFunction
+	Uninstall lua.LFunction
+	Upgrade   lua.LFunction
 }
 
 type Config struct {
@@ -53,6 +54,13 @@ func (c *Config) List() error {
 func (c *Config) Outdated() error {
 	if err := c.callLuaFunc(&c.raw.Outdated); err != nil {
 		return fmt.Errorf("failed to execute function outdated: %w", err)
+	}
+	return nil
+}
+
+func (c *Config) Uninstall(pkgName string) error {
+	if err := c.callLuaFunc(&c.raw.Uninstall, lua.LString(pkgName)); err != nil {
+		return fmt.Errorf("failed to execute function uninstall: %w", err)
 	}
 	return nil
 }
