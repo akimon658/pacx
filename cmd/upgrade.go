@@ -11,7 +11,11 @@ import (
 )
 
 var upgradeCmd = &cobra.Command{
-	Use: "upgrade",
+	Use:   "upgrade",
+	Short: "Upgrade packages",
+	Long: `Upgrade packages.
+Arguments can be in the format of "manager:package" or just "manager".
+Note that whether "package" is specified or not should be handled in your Lua code.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
 			return errors.New("no package manager specified")
