@@ -11,7 +11,10 @@ import (
 )
 
 var installCmd = &cobra.Command{
-	Use: "install",
+	Use:   "install",
+	Short: "Install packages",
+	Long: `Install packages.
+Arguments should be in the format of "manager:package".`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
 			return errors.New("no package specified")

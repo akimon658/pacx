@@ -11,7 +11,10 @@ import (
 )
 
 var outdatedCmd = &cobra.Command{
-	Use: "outdated",
+	Use:   "outdated",
+	Short: "Show outdated packages",
+	Long: `Show outdated packages.
+Arguments should be package managers.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
 			return errors.New("no package manager specified")

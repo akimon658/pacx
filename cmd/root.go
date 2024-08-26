@@ -7,7 +7,10 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use: "pacx",
+	Use:   "pacx",
+	Short: "Wrapper for package managers",
+	Long: `Pacx is a wrapper for package managers.
+You can define and configure your package managers in Lua.`,
 }
 
 func Execute() error {

@@ -11,7 +11,10 @@ import (
 )
 
 var uninstallCmd = &cobra.Command{
-	Use: "uninstall",
+	Use:   "uninstall",
+	Short: "Uninstall packages",
+	Long: `Uninstall packages.
+Arguments should be in the format of "manager:package".`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
 			return errors.New("no package specified")

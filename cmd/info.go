@@ -11,7 +11,10 @@ import (
 )
 
 var infoCmd = &cobra.Command{
-	Use: "info",
+	Use:   "info",
+	Short: "Show information about packages",
+	Long: `Show information about packages.
+Arguments should be in the format of "manager:package".`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
 			return errors.New("no package specified")
