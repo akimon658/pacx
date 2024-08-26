@@ -13,6 +13,7 @@ import (
 type rawConfig struct {
 	Info     lua.LFunction
 	Install  lua.LFunction
+	List     lua.LFunction
 	Outdated lua.LFunction
 	Upgrade  lua.LFunction
 }
@@ -38,6 +39,13 @@ func (c *Config) Info(pkgName string) error {
 func (c *Config) Install(pkgName string) error {
 	if err := c.callLuaFunc(&c.raw.Install, lua.LString(pkgName)); err != nil {
 		return fmt.Errorf("failed to execute function install: %w", err)
+	}
+	return nil
+}
+
+func (c *Config) List() error {
+	if err := c.callLuaFunc(&c.raw.List); err != nil {
+		return fmt.Errorf("failed to execute function list: %w", err)
 	}
 	return nil
 }
