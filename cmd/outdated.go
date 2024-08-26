@@ -15,11 +15,8 @@ var outdatedCmd = &cobra.Command{
 	Short: "Show outdated packages",
 	Long: `Show outdated packages.
 Arguments should be package managers.`,
+	Args: cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) == 0 {
-			return errors.New("no package manager specified")
-		}
-
 		slices.Sort(args)
 		args = slices.Compact(args)
 
