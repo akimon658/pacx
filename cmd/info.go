@@ -15,10 +15,8 @@ var infoCmd = &cobra.Command{
 	Short: "Show information about packages",
 	Long: `Show information about packages.
 Arguments should be in the format of "manager:package".`,
+	Args: cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) == 0 {
-			return errors.New("no package specified")
-		}
 		return info(argsToPkgInfo(args))
 	},
 }
