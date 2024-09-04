@@ -11,7 +11,12 @@ import (
 )
 
 var uninstallCmd = &cobra.Command{
-	Use:   "uninstall",
+	Use: "uninstall",
+	Aliases: []string{
+		"delete",
+		"remove",
+		"rm",
+	},
 	Short: "Uninstall packages",
 	Long: `Uninstall packages.
 Arguments should be in the format of "manager:package".`,
