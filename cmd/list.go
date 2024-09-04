@@ -11,8 +11,9 @@ import (
 )
 
 var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List packages",
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List packages",
 	Long: `List packages.
 Arguments should be package managers.`,
 	Args: cobra.MinimumNArgs(1),

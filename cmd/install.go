@@ -11,7 +11,11 @@ import (
 )
 
 var installCmd = &cobra.Command{
-	Use:   "install",
+	Use: "install",
+	Aliases: []string{
+		"add",
+		"i",
+	},
 	Short: "Install packages",
 	Long: `Install packages.
 Arguments should be in the format of "manager:package".`,
