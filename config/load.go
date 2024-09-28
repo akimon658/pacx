@@ -17,6 +17,7 @@ type rawConfig struct {
 	Outdated  lua.LFunction
 	Uninstall lua.LFunction
 	Upgrade   lua.LFunction
+	Why       lua.LFunction
 }
 
 type Config struct {
@@ -68,6 +69,13 @@ func (c *Config) Uninstall(pkgName string) error {
 func (c *Config) Upgrade(pkgName string) error {
 	if err := c.callLuaFunc(&c.raw.Upgrade, lua.LString(pkgName)); err != nil {
 		return fmt.Errorf("failed to execute function upgrade: %w", err)
+	}
+	return nil
+}
+
+func (c *Config) Why(pkgName string) error {
+	if err := c.callLuaFunc(&c.raw.Why, lua.LString(pkgName)); err != nil {
+		return fmt.Errorf("failed to execute function why: %w", err)
 	}
 	return nil
 }
