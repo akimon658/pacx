@@ -24,6 +24,7 @@ func init() {
 	rootCmd.AddCommand(outdatedCmd)
 	rootCmd.AddCommand(uninstallCmd)
 	rootCmd.AddCommand(upgradeCmd)
+	rootCmd.AddCommand(whyCmd)
 }
 
 type pkgInfo struct {
