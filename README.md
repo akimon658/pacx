@@ -3,12 +3,6 @@
 Pacx is a wrapper for package managers.
 It allows you to configure your package managers in Lua and use them in a unified way.
 
-## Installation
-
-```sh
-go install github.com/akimon658/pacx@latest
-```
-
 ## Usage
 
 First, you need to create configuration files for your package managers.
