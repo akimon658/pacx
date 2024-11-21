@@ -6,7 +6,7 @@ It allows you to configure your package managers in Lua and use them in a unifie
 ## Installation
 
 ```sh
-go install github.com/akimon658/pacx@latest
+cargo install --git https://github.com/akimon658/pacx
 ```
 
 ## Usage
