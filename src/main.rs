@@ -50,7 +50,7 @@ impl FromStr for PkgInfo {
         Ok(PkgInfo {
             manager: parts[0].to_string(),
             name: if parts.len() >= 2 {
-                parts[1..].concat()
+                parts[1..].join(":")
             } else {
                 "".to_string()
             },
