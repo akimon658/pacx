@@ -14,12 +14,22 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum SubCommands {
+    /// Show information about packages
     Info { pkgs_info: Vec<PkgInfo> },
+    /// Install packages
+    #[clap(aliases = &["add", "i"])]
     Install { pkgs_info: Vec<PkgInfo> },
+    /// List packages
+    #[clap(alias = "ls")]
     List { pkg_managers: Vec<String> },
+    /// Show outdated packages
     Outdated { pkg_managers: Vec<String> },
+    /// Uninstall packages
+    #[clap(aliases = &["delete", "remove", "rm"])]
     Uninstall { pkgs_info: Vec<PkgInfo> },
+    /// Upgrade packages
     Upgrade { pkgs_info: Vec<PkgInfo> },
+    /// Show why a package is installed
     Why { pkgs_info: Vec<PkgInfo> },
 }
 
