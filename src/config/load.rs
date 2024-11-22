@@ -4,11 +4,11 @@ use std::error::Error;
 use std::path::PathBuf;
 use std::{env, fs};
 
-pub struct Config<'lua> {
-    pub config: Table<'lua>,
+pub struct Config {
+    pub config: Table,
 }
 
-pub fn load<'lua>(lua: &'lua Lua, pkg_manager: &str) -> Result<Config<'lua>, Box<dyn Error>> {
+pub fn load<'lua>(lua: &'lua Lua, pkg_manager: &str) -> Result<Config, Box<dyn Error>> {
     let cfg_dir = match env::var_os("XDG_CONFIG_HOME").map(|x| PathBuf::from(x)) {
         Some(p) => p,
         None => match config_dir() {
