@@ -79,49 +79,49 @@ fn main() -> Result<(), Box<dyn Error>> {
             for pkg_info in pkgs_info {
                 let config = load(&lua, &pkg_info.manager)?;
                 let func: Function = config.config.get("info")?;
-                let _ = func.call::<String, ()>(pkg_info.name);
+                let _ = func.call::<()>(pkg_info.name);
             }
         }
         SubCommands::Install { pkgs_info } => {
             for pkg_info in pkgs_info {
                 let config = load(&lua, &pkg_info.manager)?;
                 let func: Function = config.config.get("install")?;
-                let _ = func.call::<String, ()>(pkg_info.name);
+                let _ = func.call::<()>(pkg_info.name);
             }
         }
         SubCommands::List { pkg_managers } => {
             for pkg_manager in pkg_managers {
                 let config = load(&lua, &pkg_manager)?;
                 let func: Function = config.config.get("list")?;
-                let _ = func.call::<(), ()>(());
+                let _ = func.call::<()>(());
             }
         }
         SubCommands::Outdated { pkg_managers } => {
             for pkg_manager in pkg_managers {
                 let config = load(&lua, &pkg_manager)?;
                 let func: Function = config.config.get("outdated")?;
-                let _ = func.call::<(), ()>(());
+                let _ = func.call::<()>(());
             }
         }
         SubCommands::Uninstall { pkgs_info } => {
             for pkg_info in pkgs_info {
                 let config = load(&lua, &pkg_info.manager)?;
                 let func: Function = config.config.get("uninstall")?;
-                let _ = func.call::<String, ()>(pkg_info.name);
+                let _ = func.call::<()>(pkg_info.name);
             }
         }
         SubCommands::Upgrade { pkgs_info } => {
             for pkg_info in pkgs_info {
                 let config = load(&lua, &pkg_info.manager)?;
                 let func: Function = config.config.get("upgrade")?;
-                let _ = func.call::<String, ()>(pkg_info.name);
+                let _ = func.call::<()>(pkg_info.name);
             }
         }
         SubCommands::Why { pkgs_info } => {
             for pkg_info in pkgs_info {
                 let config = load(&lua, &pkg_info.manager)?;
                 let func: Function = config.config.get("why")?;
-                let _ = func.call::<String, ()>(pkg_info.name);
+                let _ = func.call::<()>(pkg_info.name);
             }
         }
     }
