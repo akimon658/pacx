@@ -1,12 +1,11 @@
 use std::{error::Error, str::FromStr};
 
-use clap::Command;
+use clap::{crate_name, Command};
 use config::load::{load, load_pacx_config};
 use mlua::{Function, Lua};
 
 mod config;
 
-#[derive(Clone, Debug)]
 struct PkgInfo {
     manager: String,
     name: String,
@@ -34,7 +33,7 @@ impl FromStr for PkgInfo {
 fn main() -> Result<(), Box<dyn Error>> {
     let lua = Lua::new();
 
-    let mut cmd = Command::new("pacx");
+    let mut cmd = Command::new(crate_name!());
     let pacx_config = load_pacx_config(&lua)?;
 
     for subcommand in pacx_config.subcommands {

@@ -10,30 +10,23 @@ pub struct Config {
 }
 
 pub struct SubCommand {
-    pub name: &'static str,
+    pub name: String,
     pub description: String,
-    pub aliases: Vec<&'static str>,
+    pub aliases: Vec<String>,
 }
 
 impl FromLua for SubCommand {
     fn from_lua(value: mlua::Value, _: &Lua) -> mlua::Result<Self> {
         match value {
             Value::Table(t) => Ok(SubCommand {
-                name: Box::leak(t.get::<String>("name")?.into_boxed_str()),
+                name: t.get("name")?,
                 description: if t.contains_key("description")? {
                     t.get("description")?
                 } else {
                     "".to_string()
                 },
                 aliases: if t.contains_key("aliases")? {
-                    let aliases: Vec<String> = t.get("aliases")?;
-                    aliases
-                        .iter()
-                        .map(|x| {
-                            let alias: &'static str = Box::leak(x.clone().into_boxed_str());
-                            alias
-                        })
-                        .collect()
+                    t.get("aliases")?
                 } else {
                     Vec::new()
                 },
