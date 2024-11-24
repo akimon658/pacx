@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  "format": {
+    "defaultConfig": {
+      "call_arg_parentheses": "remove",
+      "quote_style": "double",
+      "trailing_table_separator": "smart"
+    }
+  }
+}
