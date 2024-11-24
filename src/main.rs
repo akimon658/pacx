@@ -1,39 +1,11 @@
 use std::{error::Error, str::FromStr};
 
-use clap::{Parser, Subcommand};
-use config::load::load;
+use clap::{crate_name, Command};
+use config::load::{load, load_pacx_config};
 use mlua::{Function, Lua};
 
 mod config;
 
-#[derive(Debug, Parser)]
-struct Cli {
-    #[clap(subcommand)]
-    subcommand: SubCommands,
-}
-
-#[derive(Debug, Subcommand)]
-enum SubCommands {
-    /// Show information about packages
-    Info { pkgs_info: Vec<PkgInfo> },
-    /// Install packages
-    #[clap(aliases = &["add", "i"])]
-    Install { pkgs_info: Vec<PkgInfo> },
-    /// List packages
-    #[clap(alias = "ls")]
-    List { pkg_managers: Vec<String> },
-    /// Show outdated packages
-    Outdated { pkg_managers: Vec<String> },
-    /// Uninstall packages
-    #[clap(aliases = &["delete", "remove", "rm"])]
-    Uninstall { pkgs_info: Vec<PkgInfo> },
-    /// Upgrade packages
-    Upgrade { pkgs_info: Vec<PkgInfo> },
-    /// Show why a package is installed
-    Why { pkgs_info: Vec<PkgInfo> },
-}
-
-#[derive(Clone, Debug)]
 struct PkgInfo {
     manager: String,
     name: String,
@@ -58,72 +30,40 @@ impl FromStr for PkgInfo {
     }
 }
 
-impl From<String> for PkgInfo {
-    fn from(s: String) -> Self {
-        match PkgInfo::from_str(&s) {
-            Ok(p) => p,
-            Err(_) => PkgInfo {
-                manager: s,
-                name: "".to_string(),
-            },
-        }
-    }
-}
-
 fn main() -> Result<(), Box<dyn Error>> {
     let lua = Lua::new();
-    let cli = Cli::parse();
 
-    match cli.subcommand {
-        SubCommands::Info { pkgs_info } => {
-            for pkg_info in pkgs_info {
-                let config = load(&lua, &pkg_info.manager)?;
-                let func: Function = config.config.get("info")?;
-                let _ = func.call::<()>(pkg_info.name);
+    let mut cmd = Command::new(crate_name!());
+    let pacx_config = load_pacx_config(&lua)?;
+
+    for subcommand in pacx_config.subcommands {
+        cmd = cmd.subcommand(
+            Command::new(subcommand.name)
+                .about(subcommand.description)
+                .aliases(subcommand.aliases),
+        );
+    }
+
+    match cmd.clone().get_matches().subcommand() {
+        Some((subcmd, arg_matches)) => {
+            let pkgs: Vec<PkgInfo> =
+                match arg_matches.get_many::<String>("") {
+                    Some(pkg_matches) => pkg_matches
+                        .map(|x| PkgInfo::from_str(x))
+                        .collect::<Result<Vec<PkgInfo>, Box<dyn Error>>>()?,
+                    None => Err("No packages specified")?,
+                };
+
+            for pkg in pkgs {
+                let config = load(&lua, &pkg.manager)?;
+                let func: Function = config.config.get(subcmd)?;
+                let _ = func.call::<()>(pkg.name)?;
             }
         }
-        SubCommands::Install { pkgs_info } => {
-            for pkg_info in pkgs_info {
-                let config = load(&lua, &pkg_info.manager)?;
-                let func: Function = config.config.get("install")?;
-                let _ = func.call::<()>(pkg_info.name);
-            }
-        }
-        SubCommands::List { pkg_managers } => {
-            for pkg_manager in pkg_managers {
-                let config = load(&lua, &pkg_manager)?;
-                let func: Function = config.config.get("list")?;
-                let _ = func.call::<()>(());
-            }
-        }
-        SubCommands::Outdated { pkg_managers } => {
-            for pkg_manager in pkg_managers {
-                let config = load(&lua, &pkg_manager)?;
-                let func: Function = config.config.get("outdated")?;
-                let _ = func.call::<()>(());
-            }
-        }
-        SubCommands::Uninstall { pkgs_info } => {
-            for pkg_info in pkgs_info {
-                let config = load(&lua, &pkg_info.manager)?;
-                let func: Function = config.config.get("uninstall")?;
-                let _ = func.call::<()>(pkg_info.name);
-            }
-        }
-        SubCommands::Upgrade { pkgs_info } => {
-            for pkg_info in pkgs_info {
-                let config = load(&lua, &pkg_info.manager)?;
-                let func: Function = config.config.get("upgrade")?;
-                let _ = func.call::<()>(pkg_info.name);
-            }
-        }
-        SubCommands::Why { pkgs_info } => {
-            for pkg_info in pkgs_info {
-                let config = load(&lua, &pkg_info.manager)?;
-                let func: Function = config.config.get("why")?;
-                let _ = func.call::<()>(pkg_info.name);
-            }
+        None => {
+            cmd.print_help()?;
         }
     }
+
     Ok(())
 }
