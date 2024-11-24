@@ -20,16 +20,19 @@ return {
       },
     },
     {
-      name = "outdated",
-      description = "List outdated packages",
-    },
-    {
       name = "unistall",
       description = "Uninstall packages",
       aliases = {
         "delete",
         "remove",
         "rm",
+      },
+    },
+    {
+      name = "upgradable",
+      description = "List upgradable packages",
+      aliases = {
+        "outdated",
       },
     },
     {
