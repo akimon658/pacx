@@ -1,8 +1,7 @@
-use std::{error::Error, str::FromStr};
-
 use clap::{arg, crate_name, Command};
-use config::load::{load, load_pacx_config};
+use config::{load, load_pacx_config};
 use mlua::{Function, Lua};
+use std::{error::Error, str::FromStr};
 
 mod config;
 
