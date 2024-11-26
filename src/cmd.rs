@@ -56,7 +56,13 @@ pub fn run() -> Result<(), Box<dyn Error>> {
 
             for pkg in pkgs {
                 let config = load(&lua, &pkg.manager)?;
-                let func: Function = config.config.get(subcmd)?;
+                let func: Function = match config.config.get(subcmd) {
+                    Ok(func) => func,
+                    Err(mlua::Error::FromLuaConversionError { from, .. }) if from == "nil" => Err(
+                        format!("function \"{}\" is not defined for {}", subcmd, pkg.manager),
+                    )?,
+                    Err(e) => Err(e)?,
+                };
                 let _ = func.call::<()>(pkg.name)?;
             }
         }
