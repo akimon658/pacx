@@ -1,6 +1,6 @@
 use std::{error::Error, str::FromStr};
 
-use clap::{crate_name, Command};
+use clap::{arg, crate_name, Command};
 use config::load::{load, load_pacx_config};
 use mlua::{Function, Lua};
 
@@ -40,14 +40,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         cmd = cmd.subcommand(
             Command::new(subcommand.name)
                 .about(subcommand.description)
-                .aliases(subcommand.aliases),
+                .aliases(subcommand.aliases)
+                .arg(arg!([package] ... "Packages to operate on")),
         );
     }
 
     match cmd.clone().get_matches().subcommand() {
         Some((subcmd, arg_matches)) => {
             let pkgs: Vec<PkgInfo> =
-                match arg_matches.get_many::<String>("") {
+                match arg_matches.get_many::<String>("package") {
                     Some(pkg_matches) => pkg_matches
                         .map(|x| PkgInfo::from_str(x))
                         .collect::<Result<Vec<PkgInfo>, Box<dyn Error>>>()?,
