@@ -35,7 +35,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Run cargo release
-        run: cargo release ${{ github.event.inputs.level }} --execute
+        run: cargo release ${{ github.event.inputs.level }} --execute --no-confirm
 
       - name: Create a release
         run: gh release create $(git describe --tags --abbrev=0) --generate-notes
