@@ -2,6 +2,9 @@
 name = "pacx"
 version = "0.3.0"
 edition = "2021"
+description = "Wrapper for package managers, allowing you to define and configure your package managers in Lua"
+license = "Apache-2.0"
+repository = "https://github.com/akimon658/pacx"
 
 [profile.release]
 codegen-units = 1
