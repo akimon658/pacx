@@ -78,7 +78,7 @@ pub fn load(lua: &Lua, pkg_manager: &str) -> Result<Config, Box<dyn Error>> {
     let cfg_path = cfg_dir.join(pkg_manager.to_owned() + ".lua");
     let config_file: String = if pkg_manager == "pacx" && !cfg_path.exists() {
         let content = include_str!("./default.lua");
-        let _ = fs::create_dir_all(&cfg_dir);
+        fs::create_dir_all(&cfg_dir)?;
         let mut writer = BufWriter::new(fs::File::create(&cfg_path)?);
 
         writer.write_all(content.as_bytes())?;
@@ -87,7 +87,10 @@ pub fn load(lua: &Lua, pkg_manager: &str) -> Result<Config, Box<dyn Error>> {
 
         content.to_string()
     } else {
-        fs::read_to_string(&cfg_path)?
+        match fs::read_to_string(&cfg_path) {
+            Ok(c) => c,
+            Err(e) => return Err(format!("Failed to open {}: {}", cfg_path.display(), e).into()),
+        }
     };
 
     let config: Table = lua.load(&config_file).eval()?;
