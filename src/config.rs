@@ -23,7 +23,7 @@ impl FromLua for SubCommand {
                 description: if t.contains_key("description")? {
                     t.get("description")?
                 } else {
-                    "".to_string()
+                    String::new()
                 },
                 aliases: if t.contains_key("aliases")? {
                     t.get("aliases")?

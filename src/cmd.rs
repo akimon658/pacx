@@ -23,7 +23,7 @@ impl FromStr for PkgInfo {
             name: if parts.len() >= 2 {
                 parts[1..].join(":")
             } else {
-                "".to_string()
+                String::new()
             },
         })
     }
@@ -57,7 +57,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
 
             let flags = match arg_matches.get_many::<String>("flag") {
                 Some(flag_matches) => flag_matches.cloned().collect::<Vec<String>>().join(" "),
-                None => "".to_string(),
+                None => String::new(),
             };
 
             for pkg in pkgs {
