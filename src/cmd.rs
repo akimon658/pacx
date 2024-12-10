@@ -1,6 +1,6 @@
 use std::{error::Error, str::FromStr};
 
-use clap::{arg, crate_name, Command};
+use clap::{arg, crate_name, crate_version, Command};
 use mlua::{Function, Lua};
 
 use crate::config::{load, load_pacx_config};
@@ -33,7 +33,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     let lua = Lua::new();
     let pacx_config = load_pacx_config(&lua)?;
 
-    let mut cmd = Command::new(crate_name!());
+    let mut cmd = Command::new(crate_name!()).version(crate_version!());
 
     for subcommand in pacx_config.subcommands {
         cmd = cmd.subcommand(
