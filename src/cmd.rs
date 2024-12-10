@@ -40,7 +40,8 @@ pub fn run() -> Result<(), Box<dyn Error>> {
             Command::new(subcommand.name)
                 .about(subcommand.description)
                 .aliases(subcommand.aliases)
-                .arg(arg!([package] ... "Packages to operate on")),
+                .arg(arg!([package] ... "Packages to operate on"))
+                .arg(arg!([flag] ... "Flags to pass to the package manager").last(true)),
         );
     }
 
@@ -54,6 +55,11 @@ pub fn run() -> Result<(), Box<dyn Error>> {
                     None => Err("No packages specified")?,
                 };
 
+            let flags = match arg_matches.get_many::<String>("flag") {
+                Some(flag_matches) => flag_matches.cloned().collect::<Vec<String>>().join(" "),
+                None => "".to_string(),
+            };
+
             for pkg in pkgs {
                 let config = load(&lua, &pkg.manager)?;
                 let func: Function = match config.config.get(subcmd) {
@@ -63,7 +69,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
                     )?,
                     Err(e) => Err(e)?,
                 };
-                let _ = func.call::<()>(pkg.name)?;
+                func.call::<()>((pkg.name, flags.clone()))?;
             }
         }
         None => {
