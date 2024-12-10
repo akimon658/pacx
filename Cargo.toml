@@ -19,4 +19,3 @@ mlua = { version = "0.10.2", features = ["lua54", "vendored"] }
 
 [dev-dependencies]
 assert_cmd = "2.0.16"
-assert_fs = "1.1.2"
