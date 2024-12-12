@@ -20,7 +20,7 @@ return {
       },
     },
     {
-      name = "unistall",
+      name = "uninstall",
       description = "Uninstall packages",
       aliases = {
         "delete",
