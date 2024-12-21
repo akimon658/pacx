@@ -1,7 +1,7 @@
 use std::{error::Error, str::FromStr};
 
-use clap::{arg, crate_name, crate_version, Command};
-use mlua::{Function, Lua};
+use clap::{arg, crate_name, crate_version, Arg, ArgAction, Command};
+use mlua::Lua;
 
 use crate::config::{load, load_pacx_config};
 
@@ -40,6 +40,13 @@ pub fn run() -> Result<(), Box<dyn Error>> {
             Command::new(subcommand.name)
                 .about(subcommand.description)
                 .aliases(subcommand.aliases)
+                .arg(
+                    Arg::new("dry-run")
+                        .long("dry-run")
+                        .short('n')
+                        .help("Print the source of the function without executing")
+                        .action(ArgAction::SetTrue),
+                )
                 .arg(arg!([package] ... "Packages to operate on"))
                 .arg(arg!([flag] ... "Flags to pass to the package manager").last(true)),
         );
@@ -47,6 +54,8 @@ pub fn run() -> Result<(), Box<dyn Error>> {
 
     match cmd.clone().get_matches().subcommand() {
         Some((subcmd, arg_matches)) => {
+            let dry_run = arg_matches.get_flag("dry-run");
+
             let pkgs: Vec<PkgInfo> =
                 match arg_matches.get_many::<String>("package") {
                     Some(pkg_matches) => pkg_matches
@@ -62,14 +71,14 @@ pub fn run() -> Result<(), Box<dyn Error>> {
 
             for pkg in pkgs {
                 let config = load(&lua, &pkg.manager)?;
-                let func: Function = match config.config.get(subcmd) {
-                    Ok(func) => func,
-                    Err(mlua::Error::FromLuaConversionError { from, .. }) if from == "nil" => Err(
-                        format!("function \"{}\" is not defined for {}", subcmd, pkg.manager),
-                    )?,
-                    Err(e) => Err(e)?,
-                };
-                func.call::<()>((pkg.name, flags.clone()))?;
+
+                if dry_run {
+                    print!("{}", config.get_function_src(subcmd)?);
+                } else {
+                    let func = config.get_function(subcmd)?;
+
+                    func.call::<()>((pkg.name, flags.clone()))?;
+                }
             }
         }
         None => {

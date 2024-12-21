@@ -39,6 +39,23 @@ fn setup() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
+fn dry_run() -> Result<(), Box<dyn Error>> {
+    setup()?;
+
+    Command::cargo_bin("pacx")?
+        .args(&["subcmd_test", "test_manager", "--dry-run"])
+        .assert()
+        .stdout(
+            r#"local function subcmd_test(pkg)
+  print(pkg)
+end
+"#,
+        );
+
+    Ok(())
+}
+
+#[test]
 fn subcommand_with_args() -> Result<(), Box<dyn Error>> {
     setup()?;
 
