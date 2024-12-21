@@ -136,12 +136,12 @@ pub fn load(lua: &Lua, pkg_manager: &str) -> Result<Config, Box<dyn Error>> {
     };
 
     let lua_config: Table = lua.load(&config_file).eval()?;
-    let lua_runner = Config {
+    let config = Config {
         lua_config,
         manager_name: pkg_manager.to_string(),
     };
 
-    Ok(lua_runner)
+    Ok(config)
 }
 
 fn get_config_dir() -> Result<PathBuf, Box<dyn Error>> {
