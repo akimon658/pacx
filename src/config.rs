@@ -13,16 +13,19 @@ pub struct Config {
 
 impl Config {
     pub fn get_function(&self, name: &str) -> Result<Function, Box<dyn Error>> {
-        Ok(match self.lua_config.get(name) {
+        let func = match self.lua_config.get(name) {
             Ok(f) => f,
             Err(mlua::Error::FromLuaConversionError { from, .. }) if from == "nil" => {
-                Err(format!(
+                return Err(format!(
                     "function \"{}\" is not defined for {}",
                     name, self.manager_name
-                ))?
+                )
+                .into());
             }
-            Err(e) => Err(e)?,
-        })
+            Err(e) => return Err(e.into()),
+        };
+
+        Ok(func)
     }
 
     pub fn get_function_src(&self, name: &str) -> Result<String, Box<dyn Error>> {

@@ -61,7 +61,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
                     Some(pkg_matches) => pkg_matches
                         .map(|x| PkgInfo::from_str(x))
                         .collect::<Result<Vec<PkgInfo>, Box<dyn Error>>>()?,
-                    None => Err("No packages specified")?,
+                    None => return Err("No packages specified".into()),
                 };
 
             let flags = match arg_matches.get_many::<String>("flag") {
