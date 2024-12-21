@@ -1,12 +1,64 @@
 use dirs::config_dir;
-use mlua::{FromLua, Lua, Table, Value};
+use mlua::{FromLua, Function, Lua, Table, Value};
 use std::error::Error;
-use std::io::{BufWriter, Write};
+use std::fs::File;
+use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::PathBuf;
 use std::{env, fs};
 
 pub struct Config {
-    pub config: Table,
+    lua_config: Table,
+    manager_name: String,
+}
+
+impl Config {
+    pub fn get_function(&self, name: &str) -> Result<Function, Box<dyn Error>> {
+        let func = match self.lua_config.get(name) {
+            Ok(f) => f,
+            Err(mlua::Error::FromLuaConversionError { from, .. }) if from == "nil" => {
+                return Err(format!(
+                    "function \"{}\" is not defined for {}",
+                    name, self.manager_name
+                )
+                .into());
+            }
+            Err(e) => return Err(e.into()),
+        };
+
+        Ok(func)
+    }
+
+    pub fn get_function_src(&self, name: &str) -> Result<String, Box<dyn Error>> {
+        let func_info = self.get_function(name)?.info();
+        let line_start = match func_info.line_defined {
+            Some(l) => l,
+            None => return Err("failed to get start line".into()),
+        };
+        let line_end = match func_info.last_line_defined {
+            Some(l) => l,
+            None => return Err("failed to get end line".into()),
+        };
+        let lines = BufReader::new(File::open(get_config_path(&self.manager_name)?)?).lines();
+        let mut src = String::new();
+        let mut line_num = 0;
+
+        for line in lines {
+            line_num += 1;
+
+            if line_num < line_start {
+                continue;
+            }
+
+            if line_num > line_end {
+                break;
+            }
+
+            src.push_str(&line?);
+            src.push('\n');
+        }
+
+        Ok(src)
+    }
 }
 
 pub struct SubCommand {
@@ -62,20 +114,13 @@ impl FromLua for PacxConfig {
 pub fn load_pacx_config(lua: &Lua) -> Result<PacxConfig, Box<dyn Error>> {
     let lua_config = load(lua, "pacx")?;
 
-    Ok(lua.convert(lua_config.config)?)
+    Ok(lua.convert(lua_config.lua_config)?)
 }
 
 pub fn load(lua: &Lua, pkg_manager: &str) -> Result<Config, Box<dyn Error>> {
-    let cfg_dir = match env::var_os("XDG_CONFIG_HOME").map(|x| PathBuf::from(x)) {
-        Some(p) => p,
-        None => match config_dir() {
-            Some(p) => p,
-            None => return Err("Failed to find config directory".into()),
-        },
-    }
-    .join("pacx");
+    let cfg_dir = get_config_dir()?;
+    let cfg_path = get_config_path(pkg_manager)?;
 
-    let cfg_path = cfg_dir.join(pkg_manager.to_owned() + ".lua");
     let config_file: String = if pkg_manager == "pacx" && !cfg_path.exists() {
         let content = include_str!("./default.lua");
         fs::create_dir_all(&cfg_dir)?;
@@ -93,8 +138,30 @@ pub fn load(lua: &Lua, pkg_manager: &str) -> Result<Config, Box<dyn Error>> {
         }
     };
 
-    let config: Table = lua.load(&config_file).eval()?;
-    let lua_runner = Config { config };
+    let lua_config: Table = lua.load(&config_file).eval()?;
+    let config = Config {
+        lua_config,
+        manager_name: pkg_manager.to_string(),
+    };
 
-    Ok(lua_runner)
+    Ok(config)
+}
+
+fn get_config_dir() -> Result<PathBuf, Box<dyn Error>> {
+    let config_dir = match env::var_os("XDG_CONFIG_HOME").map(|x| PathBuf::from(x)) {
+        Some(p) => p,
+        None => match config_dir() {
+            Some(p) => p,
+            None => return Err("Failed to find config directory".into()),
+        },
+    }
+    .join("pacx");
+
+    Ok(config_dir)
+}
+
+fn get_config_path(pkg_manager: &str) -> Result<PathBuf, Box<dyn Error>> {
+    let config_path = get_config_dir()?.join(pkg_manager.to_owned() + ".lua");
+
+    Ok(config_path)
 }
