@@ -14,7 +14,7 @@ strip = "symbols"
 
 [dependencies]
 clap = { version = "4.5.26", features = ["cargo", "string"] }
-dirs = "5.0.1"
+dirs = "6.0.0"
 mlua = { version = "0.10.2", features = ["lua54", "vendored"] }
 
 [dev-dependencies]
