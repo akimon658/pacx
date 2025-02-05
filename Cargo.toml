@@ -1,6 +1,6 @@
 [package]
 name = "pacx"
-version = "0.5.1"
+version = "0.5.2"
 edition = "2021"
 description = "Wrapper for package managers, allowing you to define and configure your package managers in Lua"
 license = "Apache-2.0"
