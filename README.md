@@ -5,9 +5,15 @@ It allows you to configure your package managers in Lua and use them in a unifie
 
 ## Installation
 
+### Cargo
+
 ```sh
 cargo install pacx
 ```
+
+### GitHub Releases
+
+You can download the binary from the [releases page](https://github.com/akimon658/pacx/releases).
 
 ## Usage
 
