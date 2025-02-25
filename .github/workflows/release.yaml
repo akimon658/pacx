@@ -27,7 +27,7 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
 
-      - uses: actions-rust-lang/setup-rust-toolchain@11df97af8e8102fd60b60a77dfbf58d40cd843b8 # v1.10.1
+      - uses: actions-rust-lang/setup-rust-toolchain@9399c7bb15d4c7d47b27263d024f0a4978346ba4 # v1.11.0
 
       - name: Install cargo-release
         uses: taiki-e/install-action@510b3ecd7915856b6909305605afa7a8a57c1b04 # v2.48.1
@@ -70,7 +70,7 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
 
-      - uses: actions-rust-lang/setup-rust-toolchain@11df97af8e8102fd60b60a77dfbf58d40cd843b8 # v1.10.1
+      - uses: actions-rust-lang/setup-rust-toolchain@9399c7bb15d4c7d47b27263d024f0a4978346ba4 # v1.11.0
 
       - name: Build
         run: cargo build --release --target ${{ matrix.platform.target }}
