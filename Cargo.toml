@@ -13,7 +13,7 @@ opt-level = "s"
 strip = "symbols"
 
 [dependencies]
-clap = { version = "4.5.28", features = ["cargo", "string"] }
+clap = { version = "4.5.32", features = ["cargo", "string"] }
 dirs = "6.0.0"
 mlua = { version = "0.10.3", features = ["lua54", "vendored"] }
 
