@@ -43,11 +43,11 @@ fn dry_run() -> Result<(), Box<dyn Error>> {
     setup()?;
 
     Command::cargo_bin("pacx")?
-        .args(&["subcmd_test", "test_manager", "--dry-run"])
+        .args(&["subcmd_test", "test_manager:", "--dry-run"])
         .assert()
         .stdout(
-            r#"local function subcmd_test(pkg)
-  print(pkg)
+            r#"local function subcmd_test(pkg, flags, version)
+  print(string.format("pkg: %s, flags: %s, version: %s", pkg, flags, version or "nil"))
 end
 "#,
         );
@@ -62,7 +62,7 @@ fn subcommand_with_args() -> Result<(), Box<dyn Error>> {
     Command::cargo_bin("pacx")?
         .args(&["subcmd_test", "test_manager:testpkg"])
         .assert()
-        .stdout("testpkg\n");
+        .stdout("pkg: testpkg, flags: , version: nil\n"); // Updated expected stdout
 
     Ok(())
 }
@@ -79,7 +79,7 @@ fn subcommand_with_arg_and_flags() -> Result<(), Box<dyn Error>> {
             "--testflag",
         ])
         .assert()
-        .stdout("testpkg --testflag\n");
+        .stdout("pkg: testpkg, flags: --testflag, version: nil\n"); // Updated expected stdout
 
     Ok(())
 }
@@ -89,9 +89,9 @@ fn subcommand_with_flags() -> Result<(), Box<dyn Error>> {
     setup()?;
 
     Command::cargo_bin("pacx")?
-        .args(&["subcmd_test_with_flags", "test_manager", "--", "--testflag"])
+        .args(&["subcmd_test_with_flags", "test_manager:", "--", "--testflag"])
         .assert()
-        .stdout("--testflag\n");
+        .stdout("flags: --testflag, version: nil (pkg was: )\n"); // Fixed (pkg was: nil) to (pkg was: )
 
     Ok(())
 }
