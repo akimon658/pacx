@@ -43,7 +43,7 @@ fn dry_run() -> Result<(), Box<dyn Error>> {
     setup()?;
 
     Command::cargo_bin("pacx")?
-        .args(&["subcmd_test", "test_manager:", "--dry-run"])
+        .args(&["subcmd_test", "test_manager", "--dry-run"]) // Removed colon
         .assert()
         .stdout(
             r#"local function subcmd_test(pkg, flags, version)
@@ -89,9 +89,9 @@ fn subcommand_with_flags() -> Result<(), Box<dyn Error>> {
     setup()?;
 
     Command::cargo_bin("pacx")?
-        .args(&["subcmd_test_with_flags", "test_manager:", "--", "--testflag"])
+        .args(&["subcmd_test_with_flags", "test_manager", "--", "--testflag"]) // Removed colon
         .assert()
-        .stdout("flags: --testflag, version: nil (pkg was: )\n"); // Fixed (pkg was: nil) to (pkg was: )
+        .stdout("flags: --testflag, version: nil (pkg was: )\n");
 
     Ok(())
 }
