@@ -181,7 +181,7 @@ mod tests {
         assert_eq!(pkg6.name, "my-package@with-at");
         assert_eq!(pkg6.version, None);
 
-        // 7. Manager-only input (previously invalid no colon)
+        // 7. Manager-only input (no colon)
         let input7 = "invalidinput";
         let pkg7 = PkgInfo::from_str(input7).unwrap();
         assert_eq!(pkg7.manager, "invalidinput");
