@@ -1,19 +1,19 @@
 use dirs::config_dir;
-use mlua::{FromLua, Function, Lua, Table, Value}; // Removed UserData, it was unused
+use mlua::{FromLua, Function, Lua, Table, Value};
 use std::error::Error;
 use std::fs::File;
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::PathBuf;
 use std::{env, fs};
 
-pub struct Config { // Removed 'lua
-    lua_config: Table, // Removed 'lua
+pub struct Config {
+    lua_config: Table,
     manager_name: String,
 }
 
-impl Config { // Removed 'lua
-    pub fn get_function(&self, name: &str) -> Result<Function, Box<dyn Error>> { // Removed 'lua from Function
-        let func: Function = match self.lua_config.get(name) { // Removed 'lua from Function
+impl Config {
+    pub fn get_function(&self, name: &str) -> Result<Function, Box<dyn Error>> {
+        let func: Function = match self.lua_config.get(name) {
             Ok(f) => f,
             Err(mlua::Error::FromLuaConversionError { from, .. }) if from == "nil" => {
                 return Err(format!(
@@ -67,8 +67,8 @@ pub struct SubCommand {
     pub aliases: Vec<String>,
 }
 
-impl FromLua for SubCommand { // Removed 'lua
-    fn from_lua(value: Value, _lua: &Lua) -> mlua::Result<Self> { // Removed 'lua
+impl FromLua for SubCommand {
+    fn from_lua(value: Value, _lua: &Lua) -> mlua::Result<Self> {
         match value {
             Value::Table(t) => Ok(SubCommand {
                 name: t.get("name")?,
@@ -85,7 +85,7 @@ impl FromLua for SubCommand { // Removed 'lua
             }),
             _ => Err(mlua::Error::FromLuaConversionError {
                 from: value.type_name(),
-                to: "SubCommand".to_string(), // Restored .to_string()
+                to: "SubCommand".to_string(),
                 message: Some("expected table".to_string()),
             }),
         }
@@ -96,15 +96,15 @@ pub struct PacxConfig {
     pub subcommands: Vec<SubCommand>,
 }
 
-impl FromLua for PacxConfig { // Removed 'lua
-    fn from_lua(value: Value, _lua: &Lua) -> mlua::Result<Self> { // Removed 'lua
+impl FromLua for PacxConfig {
+    fn from_lua(value: Value, _lua: &Lua) -> mlua::Result<Self> {
         match value {
             Value::Table(t) => Ok(PacxConfig {
                 subcommands: t.get("subcommands")?,
             }),
             _ => Err(mlua::Error::FromLuaConversionError {
                 from: value.type_name(),
-                to: "PacxConfig".to_string(), // Restored .to_string()
+                to: "PacxConfig".to_string(),
                 message: Some("expected table".to_string()),
             }),
         }
@@ -113,12 +113,11 @@ impl FromLua for PacxConfig { // Removed 'lua
 
 pub fn load_pacx_config(lua: &Lua) -> Result<PacxConfig, Box<dyn Error>> {
     let lua_config: Config = load(lua, "pacx")?;
-    // Using FromLua trait directly, which should be fine for mlua 0.10.x too
     let pacx_config = PacxConfig::from_lua(Value::Table(lua_config.lua_config), lua)?;
     Ok(pacx_config)
 }
 
-pub fn load(lua: &Lua, pkg_manager: &str) -> Result<Config, Box<dyn Error>> { // Removed 'lua
+pub fn load(lua: &Lua, pkg_manager: &str) -> Result<Config, Box<dyn Error>> {
     let cfg_dir = get_config_dir()?;
     let cfg_path = get_config_path(pkg_manager)?;
 
@@ -139,7 +138,7 @@ pub fn load(lua: &Lua, pkg_manager: &str) -> Result<Config, Box<dyn Error>> { //
         }
     };
 
-    let lua_config: Table = lua.load(&config_file).eval()?; // Removed 'lua
+    let lua_config: Table = lua.load(&config_file).eval()?;
     let config = Config {
         lua_config,
         manager_name: pkg_manager.to_string(),
