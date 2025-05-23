@@ -8,7 +8,7 @@ use crate::config::{load, load_pacx_config};
 struct PkgInfo {
     manager: String,
     name: String,
-    pub version: Option<String>,
+    version: Option<String>,
 }
 
 impl FromStr for PkgInfo {
