@@ -30,7 +30,7 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@9d7e65c320fdb52dcd45ffaa68deb6c02c8754d9 # v1.12.0
 
       - name: Install cargo-release
-        uses: taiki-e/install-action@e328d9d001c908ed6a5c128f1d6881ab8525f4e3 # v2.51.3
+        uses: taiki-e/install-action@d188da0a65bc6c80011567688127bddc8be0ca24 # v2.56.21
         with:
           tool: cargo-release
 
