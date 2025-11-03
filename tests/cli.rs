@@ -7,7 +7,7 @@ use std::{
     time::SystemTime,
 };
 
-use assert_cmd::Command;
+use assert_cmd::cargo::cargo_bin_cmd;
 
 fn setup() -> Result<(), Box<dyn Error>> {
     let timestamp = match SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
@@ -42,7 +42,7 @@ fn setup() -> Result<(), Box<dyn Error>> {
 fn dry_run() -> Result<(), Box<dyn Error>> {
     setup()?;
 
-    Command::cargo_bin("pacx")?
+    cargo_bin_cmd!("pacx")
         .args(&["subcmd_test", "test_manager", "--dry-run"])
         .assert()
         .stdout(
@@ -59,7 +59,7 @@ end
 fn subcommand_with_args() -> Result<(), Box<dyn Error>> {
     setup()?;
 
-    Command::cargo_bin("pacx")?
+    cargo_bin_cmd!("pacx")
         .args(&["subcmd_test", "test_manager:testpkg"])
         .assert()
         .stdout("testpkg\n");
@@ -71,7 +71,7 @@ fn subcommand_with_args() -> Result<(), Box<dyn Error>> {
 fn subcommand_with_arg_and_flags() -> Result<(), Box<dyn Error>> {
     setup()?;
 
-    Command::cargo_bin("pacx")?
+    cargo_bin_cmd!("pacx")
         .args(&[
             "subcmd_test_with_arg_and_flags",
             "test_manager:testpkg",
@@ -88,7 +88,7 @@ fn subcommand_with_arg_and_flags() -> Result<(), Box<dyn Error>> {
 fn subcommand_with_flags() -> Result<(), Box<dyn Error>> {
     setup()?;
 
-    Command::cargo_bin("pacx")?
+    cargo_bin_cmd!("pacx")
         .args(&["subcmd_test_with_flags", "test_manager", "--", "--testflag"])
         .assert()
         .stdout("--testflag\n");
