@@ -13,7 +13,7 @@ pub struct Config {
 
 impl Config {
     pub fn get_function(&self, name: &str) -> Result<Function, Box<dyn Error>> {
-        let func = match self.lua_config.get(name) {
+        let func: Function = match self.lua_config.get(name) {
             Ok(f) => f,
             Err(mlua::Error::FromLuaConversionError { from, .. }) if from == "nil" => {
                 return Err(format!(
@@ -68,7 +68,7 @@ pub struct SubCommand {
 }
 
 impl FromLua for SubCommand {
-    fn from_lua(value: mlua::Value, _: &Lua) -> mlua::Result<Self> {
+    fn from_lua(value: Value, _lua: &Lua) -> mlua::Result<Self> {
         match value {
             Value::Table(t) => Ok(SubCommand {
                 name: t.get("name")?,
@@ -97,7 +97,7 @@ pub struct PacxConfig {
 }
 
 impl FromLua for PacxConfig {
-    fn from_lua(value: mlua::Value, _: &Lua) -> mlua::Result<Self> {
+    fn from_lua(value: Value, _lua: &Lua) -> mlua::Result<Self> {
         match value {
             Value::Table(t) => Ok(PacxConfig {
                 subcommands: t.get("subcommands")?,
@@ -112,9 +112,9 @@ impl FromLua for PacxConfig {
 }
 
 pub fn load_pacx_config(lua: &Lua) -> Result<PacxConfig, Box<dyn Error>> {
-    let lua_config = load(lua, "pacx")?;
-
-    Ok(lua.convert(lua_config.lua_config)?)
+    let lua_config: Config = load(lua, "pacx")?;
+    let pacx_config = PacxConfig::from_lua(Value::Table(lua_config.lua_config), lua)?;
+    Ok(pacx_config)
 }
 
 pub fn load(lua: &Lua, pkg_manager: &str) -> Result<Config, Box<dyn Error>> {
